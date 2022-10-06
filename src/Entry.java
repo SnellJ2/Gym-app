@@ -14,6 +14,7 @@ public class Entry implements ActionListener {
 public static int HEIGHT = 0; //these are the user entered stats
 public static int WEIGHT = 0;
 public static int WORKOUT = 0;
+public static int GENDER_INT = 0;
 public static int BMR = 0;
 public static String GENDER = "a";
 public static int AGE = 0;
@@ -30,18 +31,28 @@ private static JButton submitProtein;
 private static JButton newDay;
 private static JLabel label;
 private static JLabel label2;
+public static Queries q;
+public static boolean test;
 public static int proteinAmount = 0;
-
 	public static void main(String[] args) throws SQLException {
 		// TODO Auto-generated method stub
-		//Queries q = new Queries();
-		//q.insert("Raw Materials", 3000);
-		//q.insert("Semifinished Goods", 4000);
-		//q.insert("Finished Goods", 5000);
-		//COmmenting all the sql stuff for now
-		//q.printAll();
-
+		q = new Queries();
 	
+		test = q.tableExists();
+		if(q.tableExists())
+		{
+			HEIGHT = q.get_height();
+			WEIGHT = q.get_weight();
+			AGE = q.get_age();
+			GENDER_INT = q.get_gender();
+			System.out.println("HEIGHT IS " + HEIGHT);
+			System.out.println("WEIGHT IS " + WEIGHT);
+			System.out.println("GENDER IS " + GENDER_INT);
+			System.out.println("AGE IS " + AGE);
+		}
+
+		q.newTable();
+
 		submit = new JButton("Submit");
 		submit.setBounds(400, 50, 100, 25);
 		label2 = new JLabel("Protein left today is " + proteinAmount);
@@ -113,9 +124,9 @@ public static int proteinAmount = 0;
 				new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						GENDER = text.getText().trim();
-						System.out.println("gender is " + GENDER);
 						if(GENDER.equals("M") || GENDER.equals("m") || GENDER.equals("F") || GENDER.equals("f"))
 						{
+							GENDER_INT = 1;
 							label.setText("Enter Your Age Please: ");	
 							p.remove(submit2);
 							p.add(submit4);
@@ -137,6 +148,7 @@ public static int proteinAmount = 0;
 					p.remove(submit3);
 					label.setText("Enter Protein Amount Consumed");
 					label2.setText("Protein left today is " + proteinAmount);
+					BMR = calculateBmr();
 					p.add(submitProtein);
 					newDay.setVisible(true);
 					}
@@ -198,6 +210,7 @@ public static int proteinAmount = 0;
 
 	public static int calculateBmr()
 	{
+		
 		int bmr = 0;
 		int weightKg = (int) (WEIGHT/2.205);
 		int heightCM = (int) (HEIGHT*2.54);
@@ -211,6 +224,8 @@ public static int proteinAmount = 0;
 			bmr = (int) ((int) (9.247 * weightKg) + (int) (3.098 * heightCM) - (int) (4.33 * AGE) + 447.593);
 			bmr += 300;
 		}
+		q.insert(HEIGHT, WEIGHT, GENDER_INT, AGE);
+		System.out.println("inserting");
 		return bmr;
 	}
 
@@ -234,7 +249,8 @@ public static int proteinAmount = 0;
 		}
 
 		return pro;
+		
 	}
-
+	
 }
 
